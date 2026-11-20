@@ -3,6 +3,7 @@
 ### Heaters
 
 - Advanced Fires 1500 electric fireplace
+- AENO ACH0002S panel heater
 - Amantii Bespoke R1-2-AP1 and TRD Lumina fireplaces
 - AMOS CY-B06ERW oil radiator
 - Andersson GSH heater

@@ -125,6 +125,17 @@ class TuyaLocalClimate(TuyaLocalEntity, ClimateEntity):
             self._attr_supported_features |= ClimateEntityFeature.TURN_ON
 
     @property
+    def supported_features(self):
+        """Hide single-target control while its datapoint cannot be written."""
+        features = self._attr_supported_features
+        dp = self._temperature_dps
+        if dp is not None and (
+            dp.readonly or dp.invalid_for(dp.get_value(self._device), self._device)
+        ):
+            features &= ~ClimateEntityFeature.TARGET_TEMPERATURE
+        return features
+
+    @property
     def temperature_unit(self):
         """Return the unit of measurement."""
         # If there is a separate DPS that returns the units, use that

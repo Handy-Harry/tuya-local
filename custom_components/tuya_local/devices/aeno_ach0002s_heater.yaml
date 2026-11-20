@@ -1,0 +1,220 @@
+name: "Panel heater"
+# Tested with AENO ACH0002S, main module 2.6.22 and MCU 1.0.21.
+# Product ID is unknown; do not substitute a private device ID.
+entities:
+  - entity: climate
+    translation_key: heater
+    dps:
+      - id: 1
+        type: boolean
+        name: hvac_mode
+        force: true
+        mapping:
+          - dps_val: false
+            value: "off"
+          - dps_val: true
+            value: heat
+      - id: 2
+        type: integer
+        name: temperature
+        unit: "C"
+        force: true
+        range:
+          min: 0
+          max: 40
+        mapping:
+          - constraint: heating_mode
+            conditions:
+              - dps_val: "manual"
+                invalid: true
+              - dps_val:
+                invalid: true
+      - id: 3
+        type: integer
+        name: current_temperature
+        unit: "C"
+        readonly: true
+        force: true
+      - id: 4
+        type: string
+        name: heating_mode
+        readonly: true
+        hidden: true
+
+  - entity: select
+    name: "Heating type"
+    dps:
+      - id: 4
+        type: string
+        name: option
+        mapping:
+          - dps_val: "manual"
+            value: "Constant"
+          - dps_val: "smart"
+            value: "Smart"
+
+  - entity: lock
+    translation_key: child_lock
+    category: config
+    dps:
+      - id: 7
+        type: boolean
+        name: lock
+        optional: true
+
+  # Enabling ceiling mounting disables rollover detection according to the app.
+  # This is deliberately exposed as status only, never as a writable switch.
+  - entity: binary_sensor
+    name: "Ceiling mounting"
+    category: diagnostic
+    dps:
+      - id: 8
+        type: boolean
+        name: sensor
+        readonly: true
+        optional: true
+
+  - entity: sensor
+    class: power
+    dps:
+      - id: 12
+        type: integer
+        name: sensor
+        unit: "W"
+        class: measurement
+        optional: true
+
+  # DP2/3 remain Celsius; DP13 controls the device's display scale separately.
+  - entity: select
+    translation_key: temperature_unit
+    category: config
+    dps:
+      - id: 13
+        type: string
+        name: option
+        optional: true
+        mapping:
+          - dps_val: "c"
+            value: "celsius"
+          - dps_val: "f"
+            value: "fahrenheit"
+
+  - entity: select
+    translation_key: timer
+    category: config
+    dps:
+      - id: 19
+        type: string
+        name: option
+        force: true
+        optional: true
+        mapping:
+          - dps_val: "cancel"
+            value: "cancel"
+          - dps_val: "1h"
+            value: "1h"
+          - dps_val: "2h"
+            value: "2h"
+          - dps_val: "3h"
+            value: "3h"
+          - dps_val: "4h"
+            value: "4h"
+          - dps_val: "5h"
+            value: "5h"
+          - dps_val: "6h"
+            value: "6h"
+
+  - entity: sensor
+    translation_key: time_remaining
+    class: duration
+    category: diagnostic
+    dps:
+      - id: 20
+        type: integer
+        name: sensor
+        unit: "min"
+        optional: true
+
+  - entity: sensor
+    class: energy
+    dps:
+      - id: 101
+        type: integer
+        name: sensor
+        unit: "kWh"
+        class: total_increasing
+        optional: true
+        mapping:
+          - scale: 1000
+
+  - entity: number
+    name: "Panel target temperature"
+    class: temperature
+    category: config
+    dps:
+      - id: 102
+        type: integer
+        name: value
+        unit: "C"
+        optional: true
+        range:
+          min: 60
+          max: 120
+        mapping:
+          - step: 5
+
+  - entity: sensor
+    name: "Panel temperature"
+    class: temperature
+    dps:
+      - id: 105
+        type: integer
+        name: sensor
+        unit: "C"
+        class: measurement
+        readonly: true
+        optional: true
+
+  - entity: select
+    name: "Indicator brightness"
+    category: config
+    dps:
+      - id: 106
+        type: string
+        name: option
+        optional: true
+        mapping:
+          - dps_val: "off"
+            value: "0%"
+          - dps_val: "low"
+            value: "30%"
+          - dps_val: "medium"
+            value: "50%"
+          - dps_val: "high"
+            value: "100%"
+
+  - entity: sensor
+    class: voltage
+    dps:
+      - id: 107
+        type: integer
+        name: sensor
+        unit: "V"
+        class: measurement
+        readonly: true
+        optional: true
+        mapping:
+          - scale: 10
+
+  - entity: sensor
+    class: current
+    dps:
+      - id: 108
+        type: integer
+        name: sensor
+        unit: "A"
+        class: measurement
+        readonly: true
+        optional: true
+        mapping:
+          - scale: 1000
